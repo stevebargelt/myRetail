@@ -4,4 +4,4 @@ WORKDIR /app
 COPY . .
 
 EXPOSE 80
-ENTRYPOINT ["dotnet", "simpleDotNet.dll"]
+ENTRYPOINT ["dotnet", "myRetail.dll"]

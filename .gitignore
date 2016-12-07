@@ -235,3 +235,5 @@ _Pvt_Extensions
 
 # Certs
 *.pem
+
+.DS_Store
