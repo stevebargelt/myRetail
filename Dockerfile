@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build:1.1.0
+FROM microsoft/aspnetcore-build:1.1.0-projectjson
 
 #####
 # START OF FROM openjdk:8-jdk
@@ -59,7 +59,6 @@ RUN chown -R jenkins /home/jenkins
 RUN chgrp -R jenkins /home/jenkins
 RUN chown -R jenkins /tmp
 RUN chgrp -R jenkins /tmp
-RUN usermod -a -G docker jenkins
 
 # Copy in the Docker certs, we'll use /usr/local/etc for them
 COPY certs/ca-key.pem /usr/local/etc/jenkins/certs/ca-key.pem
@@ -76,4 +75,18 @@ RUN chmod +r /usr/local/etc/jenkins/certs/ca-key.pem
 # Add the jenkins user to sudoers
 RUN echo "jenkins    ALL=(ALL)    ALL" >> etc/sudoers
 
+RUN apt-get update && apt-get install -y --no-install-recommends apt-transport-https ca-certificates
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+RUN echo 'deb https://apt.dockerproject.org/repo debian-jessie main' > /etc/apt/sources.list.d/docker.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	docker-engine \
+&& rm -rf /var/lib/apt/lists/*
+
+RUN gpasswd -a jenkins docker
+RUN usermod -a -G docker jenkins
+
 USER jenkins
+
+#VOLUME ["/var/run/docker.sock"]

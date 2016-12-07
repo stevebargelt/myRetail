@@ -10,11 +10,11 @@ node ('bargelt_dotnetcore_myretail') {
 	stage('Publish') {
 		sh 'dotnet publish src/myRetail/project.json -c release -o $(pwd)/publish/'
 		echo "Building: ${env.BUILD_TAG} || Build Number: ${env.BUILD_NUMBER}"
-		sh "docker build -t abs-registry.harebrained-apps.com/myRetail:${env.BUILD_NUMBER} publish"
+		sh "docker build -t abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER} publish"
 		withCredentials([usernamePassword(credentialsId: 'absadmin', passwordVariable: 'REGISTRY_PASSWORD', usernameVariable: 'REGISTRY_USER')]) {
 			sh "docker login abs-registry.harebrained-apps.com -u='${REGISTRY_USER}' -p='${REGISTRY_PASSWORD}'"
 		}
-    	sh "docker push abs-registry.harebrained-apps.com/myRetail:${env.BUILD_NUMBER}"
+    	sh "docker push abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 	}
 	stage('Production') {
 		withEnv([
@@ -22,9 +22,9 @@ node ('bargelt_dotnetcore_myretail') {
 			"DOCKER_HOST=tcp://abs.harebrained-apps.com:2376",
 			"DOCKER_CERT_PATH=/usr/local/etc/jenkins/certs/"
 		]) {
-			sh "docker pull abs-registry.harebrained-apps.com/myRetail:${env.BUILD_NUMBER}"
+			sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker stop sdn || true && docker rm sdn || true"
-			sh "docker run -d --name sdn -p 8001:80 abs-registry.harebrained-apps.com/myRetail:${env.BUILD_NUMBER}"
+			sh "docker run -d --name sdn -p 8001:80 abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 		}
 	}
 } //node
