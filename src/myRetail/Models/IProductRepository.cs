@@ -4,10 +4,10 @@ namespace myRetail.Models
 {
     public interface IProductRepository
     {
-        void Add(Product item);
+        Product Add(Product item);
         IEnumerable<Product> GetAll();
-        Product Find(string key);
-        Product Remove(string key);
+        Product Find(string id);
+        void Remove(string id);
         void Update(Product item);
     }
 }

@@ -30,9 +30,10 @@ namespace myRetail
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddTransient<DataAccess>();
             services.AddMvc();
             
-            services.AddSingleton<IProductRepository, ProductRepository>();
+            //services.AddSingleton<IProductRepository, ProductRepository>();
             
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>

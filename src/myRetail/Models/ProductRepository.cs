@@ -19,29 +19,30 @@ namespace myRetail.Models
             return _Products.Values;
         }
 
-        public void Add(Product item)
+        public Product Add(Product item)
         {
-            item.Key = Guid.NewGuid().ToString();
-            _Products[item.Key] = item;
+            //item.id = Guid.NewGuid().ToString();
+            _Products[item.id] = item;
+			return item;
         }
 
-        public Product Find(string key)
+        public Product Find(string id)
         {
             Product item;
-            _Products.TryGetValue(key, out item);
+            _Products.TryGetValue(id, out item);
             return item;
         }
 
-        public Product Remove(string key)
+        public void Remove(string id)
         {
             Product item;
-            _Products.TryRemove(key, out item);
-            return item;
+            _Products.TryRemove(id, out item);
+            //return item;
         }
 
         public void Update(Product item)
         {
-            _Products[item.Key] = item;
+            _Products[item.id] = item;
         }
     }
 }
