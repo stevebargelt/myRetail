@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using myRetail.Models;
+using Swashbuckle.Swagger.Model;
 
 namespace myRetail
 {
@@ -29,6 +31,21 @@ namespace myRetail
         {
             // Add framework services.
             services.AddMvc();
+            
+            services.AddSingleton<IProductRepository, ProductRepository>();
+            
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info
+                {
+                    Version = "v1",
+                    Title = "myRetail Product API",
+                    Description = "by @stevebargelt",
+                    TermsOfService = "NA",
+                    Contact = new Contact() { Name="stevebargelt", Email="steve@bargelt.com", Url="http://bargelt.com" }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +55,8 @@ namespace myRetail
             loggerFactory.AddDebug();
 
             app.UseMvc();
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
     }
 }
