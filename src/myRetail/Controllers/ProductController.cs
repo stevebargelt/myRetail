@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using myRetail.Models;
 using System.Net.Http;
+using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -16,8 +17,8 @@ namespace myRetail.Controllers
     public class ProductController : Controller
     {
 		DataAccess objds;
-    
-		protected string redskyBase = "http://redsky.target.com/v1/pdp/tcin/13860428?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
+
+		protected string redskyBase = "http://redsky.target.com/v1/pdp/tcin/{0}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
 
 		static HttpClient client = new HttpClient();
 
@@ -40,12 +41,48 @@ namespace myRetail.Controllers
 		[HttpGet("{id}", Name = "GetProduct")]
 		public async Task<IActionResult> GetById(int id)
 		{
-			
+			Console.WriteLine("****** GetById(int id) | id (param) = " + id);
 			Product product = null; 
 			var item = objds.Find(id);
 			if (item == null)
 			{
-				product = await GetTargetProduct();
+				var redskyProduct = string.Format(redskyBase, id);
+				System.Console.WriteLine("**********URL: " + redskyProduct);
+				JObject o = null;
+				var client = new HttpClient();
+
+				HttpResponseMessage response = await client.GetAsync(redskyProduct);
+				//var task = client.GetAsync(redskyProduct)
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonString = await response.Content.ReadAsStringAsync();
+					System.Console.WriteLine("**********JSON String: " + jsonString);
+					o = JObject.Parse(jsonString);
+								string prodid = (string)o["product"]["available_to_promise_network"]["product_id"];
+					string name = (string)o["product"]["item"]["product_description"]["title"];
+					System.Console.WriteLine("********** ID: " + prodid);
+					System.Console.WriteLine("********** title: " + name);
+					product = new Product();
+					product.targetid = System.Convert.ToInt32(prodid);	
+					product.Name = name;
+				}	
+				else
+				{
+					switch (response.StatusCode)
+					{
+						case HttpStatusCode.Forbidden : 
+							return StatusCode(403);
+							break;
+						case HttpStatusCode.NotFound :
+							return StatusCode(401);
+							break;
+						default :
+							return StatusCode(401);
+							break;
+					}
+			
+				}
+
 				if (product == null)
 				{ 
 					return NotFound();
@@ -55,8 +92,10 @@ namespace myRetail.Controllers
 					objds.Add(product);
 				}
 			}
-			return new ObjectResult(item);
+
+			return new ObjectResult(product);
 		}
+
 		[HttpPost]
 		public IActionResult Create([FromBody] Product item)
 		{
@@ -67,19 +106,27 @@ namespace myRetail.Controllers
 			objds.Add(item);
 			return CreatedAtRoute("GetProduct", new { id = item.id }, item);
 		}
+
 		[HttpPut("{id}")]
-		public IActionResult Update(int targetid, [FromBody] Product item)
+		public IActionResult Update(int id, [FromBody] Product item)
 		{
-			if (item == null || item.targetid != targetid)
+			Console.WriteLine("****** item.targetid =" + item.targetid);
+			Console.WriteLine("****** id (param) =" + id);
+			Console.WriteLine("****** new price" + item.CurrentPrice.Value);
+			
+			if (item == null || item.targetid != id)
 			{
+				Console.WriteLine("****** Return Bad Request");
 				return BadRequest();
 			}
 
-			var product = objds.Find(targetid);
+			var product = objds.Find(id);
 			if (product == null)
 			{
+				Console.WriteLine("****** Return Not Found");
 				return NotFound();
 			}
+			
 
 			objds.Update(item);
 			return new NoContentResult();
@@ -98,42 +145,37 @@ namespace myRetail.Controllers
 			return new NoContentResult();
 		}
  
-		private async Task<Product> GetTargetProduct()
+		private async Task<IActionResult> GetTargetProduct(string targetid)
 		{
-			// myRetail.Models.Target.Product model = null;
-			// var task = await client.GetAsync(redskyBase);
-			// System.Console.WriteLine("**********Task status code: " + task.StatusCode);
-			// var jsonString = await task.Content.ReadAsStringAsync();
-			// System.Console.WriteLine("**********JSON String: " + jsonString);
-			// //filler
-			// model = JsonConvert.DeserializeObject<myRetail.Models.Target.Product>(jsonString);
-			// System.Console.WriteLine("**********JSON String: " + model.item.product_description.title);
-			// return model;
-
+			var redskyProduct = string.Format(redskyBase, targetid);
+			System.Console.WriteLine("**********URL: " + redskyProduct);
 			JObject o = null;
+			Product p = null;
         	var client = new HttpClient();
-        	var task = client.GetAsync(redskyBase)
-          		.ContinueWith((taskwithresponse) =>
-          		{
-              		var response = taskwithresponse.Result;
-              		var jsonString = response.Content.ReadAsStringAsync();
-              		jsonString.Wait();
-					System.Console.WriteLine("**********JSON String: " + jsonString.Result);
-              		//model = JsonConvert.DeserializeObject<myRetail.Models.Target.Product>(jsonString.Result);
-					o = JObject.Parse(jsonString.Result);
-					
-		          });
-        	task.Wait();
-			string prodid = (string)o["product"]["available_to_promise_network"]["product_id"];
-			string name = (string)o["product"]["item"]["product_description"]["title"];
-			System.Console.WriteLine("********** ID: " + prodid);
-			System.Console.WriteLine("********** title: " + name);
-			Product p = new Product {
-				targetid = System.Convert.ToInt32(prodid),	
-				Name = name
-			};
 
-			return p;
+			HttpResponseMessage response = await client.GetAsync(redskyProduct);
+        	//var task = client.GetAsync(redskyProduct)
+			if (response.IsSuccessStatusCode)
+			{
+            	var jsonString = await response.Content.ReadAsStringAsync();
+              	System.Console.WriteLine("**********JSON String: " + jsonString);
+            	o = JObject.Parse(jsonString);
+							string prodid = (string)o["product"]["available_to_promise_network"]["product_id"];
+				string name = (string)o["product"]["item"]["product_description"]["title"];
+				System.Console.WriteLine("********** ID: " + prodid);
+				System.Console.WriteLine("********** title: " + name);
+				p.targetid = System.Convert.ToInt32(prodid);	
+				p.Name = name;
+			}	
+			else
+			{
+				if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+				{
+					return new ForbidResult();
+				}
+			}
+
+			return new ObjectResult(p);
 		}
 
     } //class

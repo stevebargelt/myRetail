@@ -1,51 +1,62 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using System.Collections.Generic;
  
 namespace myRetail.Models
 {
     public class DataAccess
     {
-        MongoClient _client;
-        MongoServer _server;
-        MongoDatabase _db;
- 
+
+		protected static IMongoClient _client;
+		protected static IMongoDatabase _database;
+		
         public DataAccess()
         {
             _client = new MongoClient("mongodb://mongo:27017");
-            _server = _client.GetServer();
-            _db = _server.GetDatabase("myretail");      
+            _database = _client.GetDatabase("myretail");      
         }
  
         public IEnumerable<Product> GetAll()
         {
-            return _db.GetCollection<Product>("Products").FindAll();
+			var filter = new BsonDocument();
+            return _database.GetCollection<Product>("Products").Find(filter).ToList();
         }
  
         public Product Find(int targetid)
         {
-            var res = Query<Product>.EQ(p=>p.targetid,targetid);
-            return _db.GetCollection<Product>("Products").FindOne(res);
+			var filter = Builders<Product>.Filter.Eq("targetid", targetid);
+			var result = _database.GetCollection<Product>("Products").Find(filter);
+			if (result.Count() > 0) 
+			{
+				return result.First();
+			}
+			return null;
         }
  
         public Product Add(Product p)
         {
-            _db.GetCollection<Product>("Products").Save(p);
+			_database.GetCollection<Product>("Products").InsertOne(p);
             return p;
         }
  
         public void Update(Product p)
         {
-            var res = Query<Product>.EQ(pd => pd.id,p.id);
-            var operation = Update<Product>.Replace(p);
-            _db.GetCollection<Product>("Products").Update(res,operation);
+			// var filter = Builders<Product>.Filter.Eq("targetid", p.targetid);
+			// var collection = _database.GetCollection<Product>("Products");
+			// var update = Builders<Product>.Update
+			// .Set("current_price.value", p.CurrentPrice.Value)
+			// .Set("current_price.currency_code", p.CurrentPrice.Value);
+			// collection.UpdateOne(filter, update);
+			var filter = Builders<Product>.Filter.Eq("targetid", p.targetid);
+			var collection = _database.GetCollection<Product>("Products");
+			collection.ReplaceOne(filter, p);
+
         }
         public void Remove(int targetid)
         {
-
-            var res = Query<Product>.EQ(e => e.targetid, targetid);
-            var operation = _db.GetCollection<Product>("Products").Remove(res);
+			var filter = Builders<Product>.Filter.Eq("targetid", targetid);
+			var collection = _database.GetCollection<Product>("Products");
+			collection.DeleteOne(filter);
         }
     }
 }

@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace myRetail.Models
 {
@@ -7,6 +8,7 @@ namespace myRetail.Models
     {
 		public Product() { }
 
+		[BsonIgnoreIfDefault]
 		public ObjectId id { get; set; }
         
 		[BsonElement("targetid")]
@@ -16,16 +18,19 @@ namespace myRetail.Models
 		public string Name { get; set; }
         
 		[BsonElement("current_price")]
+		[JsonProperty(PropertyName = "current_price")]
 		public CurrentPrice CurrentPrice { get; set; }
     }
 }
 
+
 public class CurrentPrice 
-{
-	
+{	
 	[BsonElement("value")]
+	[JsonProperty(PropertyName = "value")]
 	public decimal Value {get; set;}
 	
 	[BsonElement("currency_code")]
+	[JsonProperty(PropertyName = "currency_code")]
 	public string CurrencyCode {get; set;}
 }
