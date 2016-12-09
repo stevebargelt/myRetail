@@ -23,9 +23,9 @@ namespace myRetail.Models
             return _db.GetCollection<Product>("Products").FindAll();
         }
  
-        public Product Find(string id)
+        public Product Find(int targetid)
         {
-            var res = Query<Product>.EQ(p=>p.id,id);
+            var res = Query<Product>.EQ(p=>p.targetid,targetid);
             return _db.GetCollection<Product>("Products").FindOne(res);
         }
  
@@ -41,10 +41,10 @@ namespace myRetail.Models
             var operation = Update<Product>.Replace(p);
             _db.GetCollection<Product>("Products").Update(res,operation);
         }
-        public void Remove(string id)
+        public void Remove(int targetid)
         {
 
-            var res = Query<Product>.EQ(e => e.id, id);
+            var res = Query<Product>.EQ(e => e.targetid, targetid);
             var operation = _db.GetCollection<Product>("Products").Remove(res);
         }
     }

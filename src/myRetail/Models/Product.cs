@@ -5,10 +5,12 @@ namespace myRetail.Models
 {
     public class Product
     {
-		public ObjectId mongoid { get; set; }
+		public Product() { }
+
+		public ObjectId id { get; set; }
         
-		[BsonElement("id")]
-		public int id { get; set; }
+		[BsonElement("targetid")]
+		public int targetid { get; set; }
         
 		[BsonElement("name")]
 		public string Name { get; set; }
@@ -22,7 +24,7 @@ public class CurrentPrice
 {
 	
 	[BsonElement("value")]
-	public float Value {get; set;}
+	public decimal Value {get; set;}
 	
 	[BsonElement("currency_code")]
 	public string CurrencyCode {get; set;}
