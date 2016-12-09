@@ -8,8 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
-
+using System.IO;
 
 namespace myRetail.Controllers
 {
@@ -39,24 +38,22 @@ namespace myRetail.Controllers
 		}
 
 		[HttpGet("{id}", Name = "GetProduct")]
-		public async Task<IActionResult> GetById(int id)
+		public IActionResult GetById(int id)
 		{
 			Console.WriteLine("****** GetById(int id) | id (param) = " + id);
 			Product product = null; 
 			var item = objds.Find(id);
-			if (item == null)
+			if (item == null || item.Name == null)
 			{
+				Console.WriteLine("****** item or item.name = null");
 				var redskyProduct = string.Format(redskyBase, id);
-				System.Console.WriteLine("**********URL: " + redskyProduct);
 				JObject o = null;
 				var client = new HttpClient();
-
-				HttpResponseMessage response = await client.GetAsync(redskyProduct);
-				//var task = client.GetAsync(redskyProduct)
+				HttpResponseMessage response = Task.Run(() =>client.GetAsync(redskyProduct)).Result;
 				if (response.IsSuccessStatusCode)
 				{
-					var jsonString = await response.Content.ReadAsStringAsync();
-					System.Console.WriteLine("**********JSON String: " + jsonString);
+					var jsonString = response.Content.ReadAsStringAsync().Result;
+					//System.Console.WriteLine("**********JSON String: " + jsonString);
 					o = JObject.Parse(jsonString);
 								string prodid = (string)o["product"]["available_to_promise_network"]["product_id"];
 					string name = (string)o["product"]["item"]["product_description"]["title"];
@@ -89,11 +86,22 @@ namespace myRetail.Controllers
 				}
 				else
 				{
-					objds.Add(product);
+					if (item.Name == null)
+					{
+						item.Name = product.Name;
+						objds.Update(item);
+						return new ObjectResult(item);
+					}
+					else
+					{
+					 objds.Add(product);
+					 return new ObjectResult(product);
+					}
 				}
 			}
 
-			return new ObjectResult(product);
+			return new ObjectResult(item);
+			
 		}
 
 		[HttpPost]
