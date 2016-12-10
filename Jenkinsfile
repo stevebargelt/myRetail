@@ -15,12 +15,9 @@ node ('bargelt_dotnetcore_myretail') {
 		}
     	sh "docker push abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 	}
+	bargeltDockerTLS
 	stage('ABS-Test') {
-		withEnv([
-			"DOCKER_TLS_VERIFY=1",
-			"DOCKER_HOST=tcp://abs.harebrained-apps.com:2376",
-			"DOCKER_CERT_PATH=/usr/local/etc/jenkins/certs/abs/"
-		]) {
+		docker.withServer('tcp://abs.harebrained-apps.com:2376', 'dockerTLS') {
 			sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker stop myRetail || true && docker rm myRetail || true"
 			sh "docker run -d --name myRetail -p 8001:80 abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
