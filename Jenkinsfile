@@ -27,7 +27,7 @@ node ('bargelt_dotnetcore_myretail') {
 		}
 	}
 	stage('Prod') {
-		docker.withServer('tcp://prod.bargelt.com:2376', 'bargeltDockerTLS') {
+		docker.withServer('tcp://bargelt.bargelt.com:2376', 'bargeltDockerTLS') {
 			docker.withRegistry('https://abs-registry.harebrained-apps.com/', 'absadmin') {
 				sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			}
