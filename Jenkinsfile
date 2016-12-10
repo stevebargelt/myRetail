@@ -18,10 +18,10 @@ node ('bargelt_dotnetcore_myretail') {
 	stage('ABS-Test') {
 		docker.withServer('tcp://abs.harebrained-apps.com:2376', 'dockerTLS') {
 			sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
-			sh "docker stop myRetail || true && docker rm myRetail || true"
-			sh "docker run -d --name myRetail -p 8001:80 abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker stop mongo || true && docker rm mongo || true"
 			sh "docker run --name mongo -p 27017:27017 -v $PWD/data:/data/db -d mongo"
+			sh "docker stop myRetail || true && docker rm myRetail || true"
+			sh "docker run -d --name myRetail -p 8001:80 abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker build -t mongo-seed mongo-seed"
 			sh "docker run --rm --name mongo-seed --link mongo:mongo mongo-seed"
 		}
@@ -31,10 +31,10 @@ node ('bargelt_dotnetcore_myretail') {
 			docker.withRegistry('https://abs-registry.harebrained-apps.com/', 'absadmin') {
 				sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			}
-			sh "docker stop myRetail || true && docker rm myRetail || true"
-			sh "docker run -d --name myRetail -p 80:80 --link mongo:mongo abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker stop mongo || true && docker rm mongo || true"
 			sh "docker run --name mongo -p 27017:27017 -v $PWD/data:/data/db -d mongo"
+			sh "docker stop myRetail || true && docker rm myRetail || true"
+			sh "docker run -d --name myRetail -p 80:80 --link mongo:mongo abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker build -t mongo-seed mongo-seed"
 			sh "docker run --rm --name mongo-seed --link mongo:mongo mongo-seed"
 		}
