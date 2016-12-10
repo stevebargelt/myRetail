@@ -61,16 +61,26 @@ RUN chown -R jenkins /tmp
 RUN chgrp -R jenkins /tmp
 
 # Copy in the Docker certs, we'll use /usr/local/etc for them
-COPY certs/ca-key.pem /usr/local/etc/jenkins/certs/ca-key.pem
-COPY certs/ca.pem /usr/local/etc/jenkins/certs/ca.pem
-COPY certs/cert.pem /usr/local/etc/jenkins/certs/cert.pem
-COPY certs/key.pem /usr/local/etc/jenkins/certs/key.pem
+COPY certs/abs/ca-key.pem /usr/local/etc/jenkins/certs/abs/ca-key.pem
+COPY certs/abs/ca.pem /usr/local/etc/jenkins/certs/abs/ca.pem
+COPY certs/abs/cert.pem /usr/local/etc/jenkins/certs/abs/cert.pem
+COPY certs/abs/key.pem /usr/local/etc/jenkins/certs/abs/key.pem
+
+COPY certs/bargelt/ca-key.pem /usr/local/etc/jenkins/certs/bargelt/ca-key.pem
+COPY certs/bargelt/ca.pem /usr/local/etc/jenkins/certs/bargelt/ca.pem
+COPY certs/bargelt/cert.pem /usr/local/etc/jenkins/certs/bargelt/cert.pem
+COPY certs/bargelt/key.pem /usr/local/etc/jenkins/certs/bargelt/key.pem
 
 # Make sure cert permissions are set correctly
-RUN chmod +r /usr/local/etc/jenkins/certs/ca.pem
-RUN chmod +r /usr/local/etc/jenkins/certs/cert.pem
-RUN chmod +r /usr/local/etc/jenkins/certs/key.pem
-RUN chmod +r /usr/local/etc/jenkins/certs/ca-key.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/abs/ca.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/abs/cert.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/abs/key.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/abs/ca-key.pem
+
+RUN chmod +r /usr/local/etc/jenkins/certs/bargelt/ca.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/bargelt/cert.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/bargelt/key.pem
+RUN chmod +r /usr/local/etc/jenkins/certs/bargelt/ca-key.pem
 
 # Add the jenkins user to sudoers
 RUN echo "jenkins    ALL=(ALL)    ALL" >> etc/sudoers

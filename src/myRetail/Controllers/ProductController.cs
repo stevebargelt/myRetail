@@ -12,7 +12,7 @@ using System.IO;
 
 namespace myRetail.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class ProductController : Controller
     {
 		DataAccess objds;

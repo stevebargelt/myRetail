@@ -12,8 +12,7 @@
 
 
 #docker build -t mongo-seed mongo-seed
-#docker run --name mongo-seed --link mongo:mongo mongo-seed
-
+#docker run --rm --name mongo-seed --link mongo:mongo mongo-seed
 
 dotnet restore
 dotnet publish src/myRetail/project.json -c release -o $(pwd)/publish/
