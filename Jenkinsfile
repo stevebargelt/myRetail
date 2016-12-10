@@ -26,12 +26,10 @@ node ('bargelt_dotnetcore_myretail') {
 		}
 	}
 	stage('Prod') {
-		withEnv([
-			"DOCKER_TLS_VERIFY=1",
-			"DOCKER_HOST=tcp://prod.bargelt.com",
-			"DOCKER_CERT_PATH=/usr/local/etc/jenkins/certs/bargelt/"
-		]) {
-			sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
+		docker.withServer('tcp://prod.bargelt.com:2376', 'bargeltDockerTLS') {
+			docker.withRegistry('https://abs-registry.harebrained-apps.com/', 'absadmin') {
+				sh "docker pull abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
+			}
 			sh "docker stop myRetail || true && docker rm myRetail || true"
 			sh "docker run -d --name myRetail -p 80:80 --link mongo:mongo abs-registry.harebrained-apps.com/myretail:${env.BUILD_NUMBER}"
 			sh "docker run --name mongo -p 27017:27017 -v $PWD/data:/data/db -d mongo"
