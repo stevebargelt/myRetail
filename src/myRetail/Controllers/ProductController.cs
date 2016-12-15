@@ -15,7 +15,7 @@ namespace myRetail.Controllers
     [Route("api/v1/[controller]")]
     public class ProductController : Controller
     {
-		DataAccess objds;
+		DataAccess dataRepository;
 
 		protected string redskyBase = "http://redsky.target.com/v1/pdp/tcin/{0}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
 
@@ -23,7 +23,7 @@ namespace myRetail.Controllers
 
         public ProductController(DataAccess d)
         {
-            objds = d;
+            dataRepository = d;
 			client.BaseAddress = new System.Uri(redskyBase);
 			client.DefaultRequestHeaders.Accept.Clear();
     		client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -34,7 +34,7 @@ namespace myRetail.Controllers
 		[HttpGet]
 		public IEnumerable<Product> GetAll()
 		{
-			return objds.GetAll();
+			return dataRepository.GetAll();
 		}
 
 		[HttpGet("{id}", Name = "GetProduct")]
@@ -42,7 +42,7 @@ namespace myRetail.Controllers
 		{
 			Console.WriteLine("****** GetById(int id) | id (param) = " + id);
 			Product product = null; 
-			var item = objds.Find(id);
+			var item = dataRepository.Find(id);
 			if (item == null || item.Name == null)
 			{
 				Console.WriteLine("****** item or item.name = null");
@@ -89,12 +89,12 @@ namespace myRetail.Controllers
 					if (item.Name == null)
 					{
 						item.Name = product.Name;
-						objds.Update(item);
+						dataRepository.Update(item);
 						return new ObjectResult(item);
 					}
 					else
 					{
-					 objds.Add(product);
+					 dataRepository.Add(product);
 					 return new ObjectResult(product);
 					}
 				}
@@ -111,7 +111,7 @@ namespace myRetail.Controllers
 			{
 				return BadRequest();
 			}
-			objds.Add(item);
+			dataRepository.Add(item);
 			return CreatedAtRoute("GetProduct", new { id = item.id }, item);
 		}
 
@@ -128,7 +128,7 @@ namespace myRetail.Controllers
 				return BadRequest();
 			}
 
-			var product = objds.Find(id);
+			var product = dataRepository.Find(id);
 			if (product == null)
 			{
 				Console.WriteLine("****** Return Not Found");
@@ -136,20 +136,20 @@ namespace myRetail.Controllers
 			}
 			
 
-			objds.Update(item);
+			dataRepository.Update(item);
 			return new NoContentResult();
 		}
  
 		[HttpDelete("{id}")]
 		public IActionResult Delete(int id)
 		{
-			var product = objds.Find(id);
+			var product = dataRepository.Find(id);
 			if (product == null)
 			{
 				return NotFound();
 			}
 
-			objds.Remove(id);
+			dataRepository.Remove(id);
 			return new NoContentResult();
 		}
  
