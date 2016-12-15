@@ -7,11 +7,16 @@
     "System.Runtime.Serialization.Primitives": "4.1.1",
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-rc2-build10015",
+    "FluentAssertions": "4.12.0",
+    "Machine.Specifications": "0.11.0",
+    "Machine.Fakes": "2.8.0-beta3",
+    "Machine.Fakes.Moq": "2.8.0-beta3",
+    "dotnet-test-mspec": "*",
     "myRetail": {
       "target": "project"
     }
   },
-  "testRunner": "xunit",
+  "testRunner": "mspec",
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {
