@@ -6,9 +6,9 @@ Architecture:
 * Docker
 
 Features:
-* Full Docker-ized CI/CD pipeline [LINK]
+* Full Docker-ized CI/CD pipeline
 * Swagger API Documentation 
-* Hosted in Azure
+* Hosted in Azure, in a Docker container on Linux (Ubuntu)
 
 Given more time:
 * Authentication for updates, inserts, deletes
@@ -34,7 +34,7 @@ buildme.sh
 Browse to: [http://localhost:8001/swagger/ui](http://localhost:8001/swagger/ui)
 
 ### Locally
-Prerequisites: [MongoDB](), [dotnet core](https://www.microsoft.com/net/core)
+Prerequisites: [MongoDB](https://www.mongodb.com), [dotnet core](https://www.microsoft.com/net/core)
 
 Create and seed MongoDB:
 
