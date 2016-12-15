@@ -1,16 +1,61 @@
 # myRetail
 
+Features:
+* ASP.Net Core (will run on Mac OS, Linux, Windows)
+* MongoDB
+* Full Docker-ized CI/CD pipeline [LINK]
+* Swagger API Documentation 
 
 
+## Build and Run
 
-## MongoDB
+These instruction have only been tested on a Macbook running MacOS. You can be on Linux or Windows as a client, though some of the client-side tooling changes around a bit.
 
-docker run -it --link mongo:mongo --rm mongo sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/test"'
+### Docker (preferred method!)
 
+Prerequisites: [Docker](http://www.docker.com), [dotnet core](https://www.microsoft.com/net/core)
+
+At a shell prompt:
+
+~~~~
+buildme.sh
+~~~~
+
+Browse to: [http://localhost:8001/swagger/ui](http://localhost:8001/swagger/ui)
+
+### Locally
+Prerequisites: [MongoDB](), [dotnet core](https://www.microsoft.com/net/core)
+
+Create and seed MongoDB:
+
+~~~~
+mongo
 use myRetail
 db.createCollection('Products')
+exit
 
-db.Products.insert({'targetid':13860428,'name':'The Big Lebowski (Blu-ray) (Widescreen)','current_price':{'value': 13.49,'currency_code':'USD'}})
+mongoimport --db myretail --collection Products --drop --file ./mongo-seed/primer-target.json
+~~~~
+
+In myretail/src/myretail/Models/DataAccess.cs change
+~~~~
+_client = new MongoClient("mongodb://mongo:27017");
+~~~~
+to
+~~~~
+_client = new MongoClient("mongodb://127.0.0.1:27017");
+~~~~
+
+Back at the shell:
+~~~~
+cd src
+cd myRetail
+dotnet restore
+dotnet run
+~~~~
+
+Browse to: [http://localhost:5000/swagger/ui](http://localhost:5000/swagger/ui)
+
 
 ## Test Data
 
@@ -31,8 +76,8 @@ db.Products.insert({'targetid':13860428,'name':'The Big Lebowski (Blu-ray) (Wide
 16271062
 
 ### Test Price Updates
-#### Update product without price (null)
+#### Update a product without price (null)
 {"targetid": 13860428,"name": "The Big Lebowski (Blu-ray)", "current_price": {"value": 13.99,"currency_code": "USD"}}
 
-#### Update product with price
+#### Update a product with price
 {"targetid": 50567541,"name": "LEGO&#174; Star Wars&#153; AT-ST&#153; Walker 75153","current_price": {"value": 89.99,"currency_code": "USD"}}
