@@ -1,11 +1,21 @@
 # myRetail
 
-Features:
+Architecture:
 * ASP.Net Core (will run on Mac OS, Linux, Windows)
 * MongoDB
+* Docker
+
+Features:
 * Full Docker-ized CI/CD pipeline [LINK]
 * Swagger API Documentation 
+* Hosted in Azure
 
+Given more time:
+* Authentication for updates, inserts, deletes
+* Would only cache the Target/Redsky results
+* In memory caching of results: redis or memcache
+* Refactor the heck out of the ProductController
+* Backup/Failover/Redundancy
 
 ## Build and Run
 
@@ -55,7 +65,6 @@ dotnet run
 ~~~~
 
 Browse to: [http://localhost:5000/swagger/ui](http://localhost:5000/swagger/ui)
-
 
 ## Test Data
 
