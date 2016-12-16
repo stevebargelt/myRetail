@@ -1,27 +1,25 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using myRetail.Models;
 using System.Net.Http;
 using System.Net;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace myRetail.Controllers
 {
-    [Route("api/v1/[controller]")]
-    public class ProductController : Controller
+    [Route(Endpoint)]
+    public class ProductsController : Controller
     {
+		 public const string Endpoint = "v1/products";
 		DataAccess dataRepository;
 
 		protected string redskyBase = "http://redsky.target.com/v1/pdp/tcin/{0}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
 
 		static HttpClient client = new HttpClient();
 
-        public ProductController(DataAccess d)
+        public ProductsController(DataAccess d)
         {
             dataRepository = d;
 			client.BaseAddress = new System.Uri(redskyBase);
@@ -49,7 +47,7 @@ namespace myRetail.Controllers
 				var redskyProduct = string.Format(redskyBase, id);
 				JObject o = null;
 				var client = new HttpClient();
-				HttpResponseMessage response = Task.Run(() =>client.GetAsync(redskyProduct)).Result;
+				HttpResponseMessage response = Task.Run(() => client.GetAsync(redskyProduct)).Result;
 				if (response.IsSuccessStatusCode)
 				{
 					var jsonString = response.Content.ReadAsStringAsync().Result;
@@ -70,14 +68,10 @@ namespace myRetail.Controllers
 						case HttpStatusCode.Forbidden : 
 							return StatusCode(403);
 							break;
-						case HttpStatusCode.NotFound :
-							return StatusCode(401);
-							break;
 						default :
 							return StatusCode(401);
 							break;
 					}
-			
 				}
 
 				if (product == null)

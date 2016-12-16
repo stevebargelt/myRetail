@@ -34,7 +34,7 @@ namespace myRetail
             services.AddMvc();
             
             //services.AddSingleton<IProductRepository, ProductRepository>();
-            
+            services.AddRouting(opt => opt.LowercaseUrls = true);
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
             {
@@ -55,7 +55,7 @@ namespace myRetail
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseMvc(opt => opt.MapRoute("default", "{controller}/{id?}"));
             app.UseSwagger();
             app.UseSwaggerUi();
         }

@@ -8,6 +8,7 @@ namespace myRetail.Models
     {
 		public Product() { }
 
+		[JsonIgnore]
 		[BsonIgnoreIfDefault]
 		public ObjectId id { get; set; }
         
