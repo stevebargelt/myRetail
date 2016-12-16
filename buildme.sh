@@ -1,6 +1,7 @@
 #!bin/bash
 
 dotnet restore
+dotnet test test/myretail.Tests
 dotnet publish src/myRetail/project.json -c release -o $(pwd)/publish/
 docker build -t myretail publish
 docker stop mongo || true && docker rm mongo || true
