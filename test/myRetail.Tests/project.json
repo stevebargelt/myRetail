@@ -15,7 +15,7 @@
     "System.Runtime.Serialization.Primitives": "4.3.0",
     "xunit": "2.1.0",
     "myRetail": {
-      "target": "project",
+      "target": "project"
     }
   },
   "testRunner": "xunit",

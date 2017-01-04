@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using myRetail.Models;
 using System.Net.Http;
@@ -27,13 +28,13 @@ namespace myRetail.Controllers
     		client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        //public IProductRepository Products { get; set; }
+        public IActionResult Products { get; set; }
 
-		// [HttpGet]
-		// public IEnumerable<Product> GetAll()
-		// {
-		// 	return dataRepository.GetAll();
-		// }
+		[HttpGet]
+		public IEnumerable<Product> GetAll()
+		{
+			return dataRepository.GetAll();
+		}
 
 		[HttpGet("{id}", Name = "GetProduct")]
 		public IActionResult GetById(int id)
@@ -98,16 +99,16 @@ namespace myRetail.Controllers
 			
 		}
 
-		// [HttpPost]
-		// public IActionResult Create([FromBody] Product item)
-		// {
-		// 	if (item == null)
-		// 	{
-		// 		return BadRequest();
-		// 	}
-		// 	dataRepository.Add(item);
-		// 	return CreatedAtRoute("GetProduct", new { id = item.id }, item);
-		// }
+		[HttpPost]
+		public IActionResult Create([FromBody] Product item)
+		{
+			if (item == null)
+			{
+				return BadRequest();
+			}
+			dataRepository.Add(item);
+			return CreatedAtRoute("GetProduct", new { id = item.id }, item);
+		}
 
 		[HttpPut("{id}")]
 		public IActionResult Update(int id, [FromBody] Product item)
@@ -134,18 +135,18 @@ namespace myRetail.Controllers
 			return new NoContentResult();
 		}
  
-		// [HttpDelete("{id}")]
-		// public IActionResult Delete(int id)
-		// {
-		// 	var product = dataRepository.Find(id);
-		// 	if (product == null)
-		// 	{
-		// 		return NotFound();
-		// 	}
+		[HttpDelete("{id}")]
+		public IActionResult Delete(int id)
+		{
+			var product = dataRepository.Find(id);
+			if (product == null)
+			{
+				return NotFound();
+			}
 
-		// 	dataRepository.Remove(id);
-		// 	return new NoContentResult();
-		// }
+			dataRepository.Remove(id);
+			return new NoContentResult();
+		}
 
     } //class
 } // namespace
