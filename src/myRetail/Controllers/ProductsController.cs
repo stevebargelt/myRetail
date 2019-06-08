@@ -13,7 +13,7 @@ namespace myRetail.Controllers
     [Route(Endpoint)]
     public class ProductsController : Controller
     {
-		 public const string Endpoint = "v1/products";
+		public const string Endpoint = "v1/products";
 		DataAccess dataRepository;
 
 		protected string redskyBase = "http://redsky.target.com/v1/pdp/tcin/{0}?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";

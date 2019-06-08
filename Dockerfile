@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build:1.1.0-projectjson
+FROM microsoft/aspnetcore-build:1.1.1
 
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE 1
 
